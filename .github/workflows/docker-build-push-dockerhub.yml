@@ -34,6 +34,9 @@ jobs:
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
+    strategy:
+      matrix:
+        registry: [ "docker.pkg.github.com", "ghcr.io" ]
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: checkout
