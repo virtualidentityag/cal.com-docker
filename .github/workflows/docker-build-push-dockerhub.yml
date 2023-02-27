@@ -78,6 +78,18 @@ jobs:
           registry: ${{ env.DOCKER_REGISTRY }}
           username: ${{ secrets.GH_PACKAGE_RELEASE_USER }}
           password: ${{ secrets.GH_PACKAGE_RELEASE_TOKEN }}
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: '${{ env.DOCKER_REGISTRY }}/${{ env.REPO_NAME_WITHOUT_PREFIX }}'
+          flavor: |
+            latest=false
+          tags: |
+            type=ref,event=branch
+            type=ref,event=tag
+            type=raw,value=${{ env.DOCKER_IMAGE_TAG}}
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'release') }}
       - name: Push to GitHub Packages
         uses: docker/build-push-action@v3
         with:
@@ -98,15 +110,6 @@ jobs:
           echo "### Publish Docker image :x:" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- It seems that something has gone wrong" >> $GITHUB_STEP_SUMMARY
-          
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: |
-            docker.io/calendso/calendso
-            docker.io/calcom/cal.com
-            ghcr.io/calcom/cal.com
 
       - name: Copy env
         run: |
