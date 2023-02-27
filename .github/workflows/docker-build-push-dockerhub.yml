@@ -36,7 +36,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     strategy:
       matrix:
-        registry: [ "docker.pkg.github.com", "ghcr.io" ]
+        registry: [ "docker.pkg.github.com"]
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: checkout
@@ -90,27 +90,6 @@ jobs:
             type=ref,event=tag
             type=raw,value=${{ env.DOCKER_IMAGE_TAG}}
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'release') }}
-      - name: Push to GitHub Packages
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-      - name: Hint about the Docker Image Tag if successfull
-        if: ${{ success() }}
-        run: |
-          echo "### Publish Docker image :white_check_mark:" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- Image name: ${{ env.DOCKER_IMAGE }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Version: ${{ env.DOCKER_IMAGE_TAG }}" >> $GITHUB_STEP_SUMMARY
-      - name: Hint about the Docker Image Tag if not successfull
-        if: ${{ failure() || cancelled() }}
-        run: |
-          echo "### Publish Docker image :x:" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- It seems that something has gone wrong" >> $GITHUB_STEP_SUMMARY
-
       - name: Copy env
         run: |
           grep -o '^[^#]*' .env.example > .env
