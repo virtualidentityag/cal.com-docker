@@ -17,16 +17,6 @@ on:
       - completed
   # Allow running workflow manually from the Actions tab
   workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Environment'
-        required: true
-        default: 'development'
-        type: choice
-        options:
-        - development
-        - staging
-        - production
 
 # Leaving in example for releases. Initially we simply push to 'latest'
 # on:
@@ -76,7 +66,7 @@ jobs:
         shell: bash
       - name: Set branch_timestamp for image from branch
         if: ${{ env.TYPE == 'branch' }}
-        run: echo DOCKER_IMAGE_TAG=$(echo "${{ env.CLEAN_REF }}_${{ env.TIME_STAMP }}_${{ inputs.environment }}") >> $GITHUB_ENV
+        run: echo DOCKER_IMAGE_TAG=$(echo "${{ env.CLEAN_REF }}_${{ env.TIME_STAMP }}") >> $GITHUB_ENV
         shell: bash
       - name: Set tag for image from tag
         if: ${{ env.TYPE == 'tag' }}
